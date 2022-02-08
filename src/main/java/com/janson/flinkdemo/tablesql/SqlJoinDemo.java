@@ -62,6 +62,7 @@ public class SqlJoinDemo {
             }
         }).select("odd");
 
+        Thread.sleep(5000);
 
         bsTableEnv.createTemporaryView("evenTable", evenSelect, "name,id");
         bsTableEnv.createTemporaryView("oddTable", oddSelect, "name,id");
