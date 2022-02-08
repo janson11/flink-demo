@@ -99,3 +99,30 @@ Aggregations 为聚合函数的总称，常见的聚合函数包括但不限于 
 
 Reduce
 Reduce 函数的原理是，会在每一个分组的 keyedStream 上生效，它会按照用户自定义的聚合逻辑进行分组聚合。
+
+
+Table API 和 SQL 处于最顶端，是 Flink 提供的高级 API 操作。Flink SQL 是 Flink 实时计算为简化计算模型，降低用户使用实时计算门槛而设计的一套符合标准 SQL 语义的开发语言。
+![img_5.png](src/main/resources/static/img_5.png)
+
+
+你之前可能都了解过 Hive，在离线计算场景下 Hive 几乎扛起了离线数据处理的半壁江山。它的底层对 SQL 的解析用到了 Apache Calcite，Flink 同样把 SQL 的解析、优化和执行教给了 Calcite。
+
+下图是一张经典的 Flink Table & SQL 实现原理图，可以看到 Calcite 在整个架构中处于绝对核心地位。
+
+![img_4.png](src/main/resources/static/img_4.png)
+
+动态表
+与传统的表 SQL 查询相比，Flink Table & SQL 在处理流数据时会时时刻刻处于动态的数据变化中，所以便有了一个动态表的概念。
+
+动态表的查询与静态表一样，但是，在查询动态表的时候，SQL 会做连续查询，不会终止。
+
+
+WINDOW
+
+根据窗口数据划分的不同，目前 Apache Flink 有如下 3 种：
+
+滚动窗口，窗口数据有固定的大小，窗口中的数据不会叠加；
+
+滑动窗口，窗口数据有固定大小，并且有生成间隔；
+
+会话窗口，窗口数据没有固定的大小，根据用户传入的参数进行划分，窗口数据无叠加；

@@ -45,7 +45,7 @@ public class MyStreamingSource implements SourceFunction<MyStreamingSource.Item>
     }
 
 
-    class Item {
+    public static class Item {
         private String name;
         private Integer id;
 
@@ -99,7 +99,7 @@ class StreamingDemo {
         env.execute(jobName);
     }
 
-    static class MyMapFunction extends RichMapFunction<MyStreamingSource.Item,String> {
+    static class MyMapFunction extends RichMapFunction<MyStreamingSource.Item, String> {
 
         @Override
         public String map(MyStreamingSource.Item value) throws Exception {
