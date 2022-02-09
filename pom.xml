@@ -67,11 +67,19 @@
         </dependency>
 
 
+        <!--cep -->
         <!-- https://mvnrepository.com/artifact/org.apache.flink/flink-cep -->
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-cep_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
+        </dependency>
+
+        <!--bitmap-->
+        <dependency>
+            <groupId>org.roaringbitmap</groupId>
+            <artifactId>RoaringBitmap</artifactId>
+            <version>0.8.0</version>
         </dependency>
 
         <dependency>
