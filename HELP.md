@@ -130,3 +130,28 @@ WINDOW
 整体上讲，这四种级别的配置生效优先级如下：算子级别 > 执行环境级别 > 提交任务级别 > 系统配置级别。
 
 ![img_6.png](src/main/resources/static/img_6.png)
+
+
+Flink Side OutPut 分流
+分流场景
+我们在生产实践中经常会遇到这样的场景，需把输入源按照需要进行拆分，比如我期望把订单流按照金额大小进行拆分，或者把用户访问日志按
+
+分流的方法
+通常来说针对不同的场景，有以下三种办法进行流的拆分。
+
+Filter 分流
+Split 分流
+但是要注意，使用 split 算子切分过的流，是不能进行二次切分的，假如把上述切分出来的 zeroStream 和 oneStream 流再次调用 split 切分，控制台会抛出以下异常。
+
+
+SideOutPut 分流
+SideOutPut 是 Flink 框架为我们提供的最新的也是最为推荐的分流方法，在使用 SideOutPut 时，需要按照以下步骤进行：
+
+定义 OutputTag
+调用特定函数进行数据拆分
+ProcessFunction
+KeyedProcessFunction
+CoProcessFunction
+KeyedCoProcessFunction
+ProcessWindowFunction
+ProcessAllWindowFunction
