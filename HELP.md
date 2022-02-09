@@ -155,3 +155,17 @@ CoProcessFunction
 KeyedCoProcessFunction
 ProcessWindowFunction
 ProcessAllWindowFunction
+
+SideOutPut 方式拆分流是可以多次进行拆分
+
+Complex Event Processing（CEP）是 Flink 提供的一个非常亮眼的功能，关于 CEP 的解释我们引用维基百科中的一段话：
+
+CEP, is event processing that combines data from multiple sources to infer events or patterns that suggest more complicated circumstances. The goal of complex event processing is to identify meaningful events (such as opportunities or threats) and respond to them as quickly as possible.
+
+在我们的实际生产中，随着数据的实时性要求越来越高，实时数据的量也在不断膨胀，在某些业务场景中需要根据连续的实时数据，发现其中有价值的那些事件。
+
+程序结构
+Flink CEP 的程序结构主要分为两个步骤：
+
+定义模式
+匹配结果
