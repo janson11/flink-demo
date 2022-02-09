@@ -252,3 +252,108 @@ GC
 
 代码本身
 开发者错误地使用 Flink 算子，没有深入了解算子的实现机制导致性能问题。我们可以通过查看运行机器节点的 CPU 和内存情况定位问题。
+
+
+## 数据倾斜原因和解决方案
+Flink 任务出现数据倾斜的直观表现是任务节点频繁出现反压，但是增加并行度后并不能解决问题；部分节点出现 OOM 异常，是因为大量的数据集中在某个节点上，导致该节点内存被爆，任务失败重启。
+
+产生数据倾斜的原因主要有 2 个方面：
+
+业务上有严重的数据热点，比如滴滴打车的订单数据中北京、上海等几个城市的订单量远远超过其他地区；
+
+技术上大量使用了 KeyBy、GroupBy 等操作，错误的使用了分组 Key，人为产生数据热点。
+
+因此解决问题的思路也很清晰：
+
+业务上要尽量避免热点 key 的设计，例如我们可以把北京、上海等热点城市分成不同的区域，并进行单独处理；
+
+技术上出现热点时，要调整方案打散原来的 key，避免直接聚合；此外 Flink 还提供了大量的功能可以避免数据倾斜。
+
+那么我们就从典型的场景入手，看看在 Flink 任务中出现数据倾斜的主要场景和解决方案。
+
+Flink 任务数据倾斜场景和解决方案
+两阶段聚合解决 KeyBy 热点
+KeyBy 是我们经常使用的分组聚合函数之一。在实际的业务中经常会碰到这样的场景：双十一按照下单用户所在的省聚合求订单量最高的前 10 个省，或者按照用户的手机类型聚合求访问量最高的设备类型等。
+```java
+DataStream sourceStream = ...;
+
+windowedStream = sourceStream.keyBy("type")
+
+          .window(TumblingEventTimeWindows.of(Time.minutes(1)));
+
+windowedStream.process(new MyPVFunction())
+
+              .addSink(new MySink())... 
+
+env.execute()...
+
+
+```
+
+我们在根据 type 进行 KeyBy 时，如果数据的 type 分布不均匀就会导致大量的数据分配到一个 task 中去，发生数据倾斜。
+那么我们的解决思路是：
+
+首先把分组的 key 打散，比如加随机后缀；
+
+对打散后的数据进行聚合；
+
+把打散的 key 还原为真正的 key；
+
+二次 KeyBy 进行结果统计，然后输出。
+
+````java
+DataStream sourceStream = ...;
+
+resultStream = sourceStream
+
+     .map(record -> {
+
+        Record record = JSON.parseObject(record, Record.class);
+
+        String type = record.getType();
+
+        record.setType(type + "#" + new Random().nextInt(100));
+
+        return record;
+
+      })
+
+      .keyBy(0)
+
+      .window(TumblingEventTimeWindows.of(Time.minutes(1)))
+
+      .aggregate(new CountAggregate())
+
+      .map(count -> {
+
+        String key = count.getKey.substring(0, count.getKey.indexOf("#"));
+
+        return RecordCount(key,count.getCount);
+
+      })
+
+      //二次聚合
+
+      .keyBy(0)
+
+      .process(new CountProcessFunction);
+
+
+
+resultStream.sink()...
+
+env.execute()...
+
+````
+
+
+Flink 如何做维表关联
+在 Flink 流式计算中，我们的一些维度属性一般存储在 MySQL/HBase/Redis 中，这些维表数据存在定时更新，需要我们根据业务进行关联。根据我们业务对维表数据关联的时效性要求，有以下几种解决方案：
+
+实时查询维表
+
+预加载全量数据
+
+LRU 缓存
+
+其他
