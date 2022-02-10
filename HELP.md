@@ -424,3 +424,4 @@ Hive、Hawq、Presto、Kylin、Impala、SparkSQL、Druid、Clickhouse、Greeplum
 消息乱序问题:
 所以我们一般都会用 EventTime、WaterMark 和窗口配合使用来解决消息的乱序和延迟问题。
 
+TopN 热门商品功能实现
