@@ -420,3 +420,7 @@ Kafka 作为大数据生态系统中已经必不可少的一员，主要的特�
 百花齐放——OLAP 数据库选择
 OLAP 的选择是当前实时架构中最有争议和最困难的。目前市面上主流的开源 OLAP 引擎包含但不限于：
 Hive、Hawq、Presto、Kylin、Impala、SparkSQL、Druid、Clickhouse、Greeplum 等，可以说目前没有一个引擎能在数据量，灵活程度和性能上做到完美，用户需要根据自己的需求进行选型。
+
+消息乱序问题:
+所以我们一般都会用 EventTime、WaterMark 和窗口配合使用来解决消息的乱序和延迟问题。
+
