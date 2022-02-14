@@ -425,3 +425,28 @@ Hive、Hawq、Presto、Kylin、Impala、SparkSQL、Druid、Clickhouse、Greeplum
 所以我们一般都会用 EventTime、WaterMark 和窗口配合使用来解决消息的乱序和延迟问题。
 
 TopN 热门商品功能实现
+
+
+
+Flume 是一个分布式、可靠和高可用的海量日志采集、聚合和传输的系统。
+Flume 可以采集文件、Socket 数据包等各种形式源数据，又可以将采集到的数据输出到 HDFS、HBase、Hive、Kafka 等众多外部存储系统中。
+一般的采集需求，通过对 Flume 的简单配置即可实现 Flume 针对特殊场景也具备良好的自定义扩展能力。因此，Flume 可以适用于大部分的日常数据采集场景。
+
+Flume 分布式系统中核心角色是 Agent，整个采集系统由一个个 Agent 进行的串联。我们可以把每个 Agent 想象为一个数据的投递员，它由三个组件构成：
+
+Client：客户端，用来运行 Flume Agent。
+
+Event：Flume 中的数据单位，可以是一行日志、一条消息。
+
+Agent：代表一个独立的 Flume 进程，包含三个组件：Source、Channel 和 Sink。
+
+Source：数据的收集入口，用来获取 Event 并且传递给 Channel。
+
+Channel：Event 的一个临时存储，是数据的临时通道，可以认为是一个队列。
+
+Sink：从 Channel 中读取 Event，将 Event 中的数据传递给下游。
+
+Flow：一个抽象概念，可以认为是一个从 Source 到达 Sink 的数据流向图。
+
+
+
